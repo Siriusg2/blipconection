@@ -1,11 +1,19 @@
 function parseSignedInteger(bytes) {
-  let result = "";
-  for (let i = bytes.length - 1; i >= 0; i--) {
-    result += bytes[i];
-  }
-  const value = parseInt(result, 16);
-  const signBit = 1 << (bytes.length * 8 - 1);
-  return value & signBit ? -(value ^ 0xffffffff) - 1 : value;
+  // Concatenar los bytes en orden little-endian
+  const littleEndianHex = bytes.reverse().join("");
+
+  // Convertir de hexadecimal a decimal
+  const decimal = parseInt(littleEndianHex, 16);
+
+  // Verificar el signo
+  const signBit = 0x80; // Primer bit en el primer byte indica el signo
+  const isNegative = decimal & signBit;
+
+  // Aplicar el signo si es negativo
+  const signedDecimal = isNegative ? -((~decimal + 1) & 0x7fffffff) : decimal;
+
+  // Retornar el resultado dividido por 10 millones
+  return signedDecimal / 10000000;
 }
 
 function adjustPrecision(number) {

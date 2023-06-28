@@ -12,12 +12,12 @@ const excercise2Controller = (gpsTrama) => {
   const directionBytes = gpsTrama.slice(10, 12);
   const altitudeBytes = gpsTrama.slice(12, 14);
   const precisionBytes = gpsTrama.slice(14, 16);
-
   const mileageBytes = gpsTrama.slice(16, 20);
   const satellitesByte = gpsTrama[20];
-
-  const lat = parseSignedInteger(latBytes) / 10000000;
-  const lng = parseSignedInteger(lngBytes) / 10000000;
+  console.log(latBytes);
+  console.log(lngBytes);
+  const lat = parseSignedInteger(latBytes);
+  const lng = parseSignedInteger(lngBytes);
   const speed = toDecimalLittleEndian(speedBytes);
   const direction = adjustDirection(toDecimalLittleEndian(directionBytes));
   const precision = adjustPrecision(toDecimalLittleEndian(precisionBytes));
