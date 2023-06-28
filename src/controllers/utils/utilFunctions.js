@@ -1,13 +1,11 @@
 function parseSignedInteger(bytes) {
-  let value = 0;
-  for (let i = 0; i < bytes.length; i++) {
-    value = (value << 8) | parseInt(bytes[i], 16);
+  let result = "";
+  for (let i = bytes.length - 1; i >= 0; i--) {
+    result += bytes[i];
   }
-  const signBit = 0x80000000;
-  if (value & signBit) {
-    value = -(0x100000000 - value);
-  }
-  return value;
+  const value = parseInt(result, 16);
+  const signBit = 1 << (bytes.length * 8 - 1);
+  return value & signBit ? -(value ^ 0xffffffff) - 1 : value;
 }
 
 function adjustPrecision(number) {
@@ -26,17 +24,34 @@ function adjustPrecision(number) {
 
   return number;
 }
+function adjustDirection(number) {
+  const minValue = 0;
+  const maxValue = 359;
 
-function parseHexToDecimal(hexArray) {
-  let result = 0;
-  for (let i = 0; i < hexArray.length; i++) {
-    result = (result << 4) | parseInt(hexArray[i], 16);
+  // Verificar si el número está dentro del rango
+  if (number >= minValue && number <= maxValue) {
+    return number; // El número ya está dentro del rango, no se requiere ajuste
   }
-  return result;
+
+  // Dividir el número entre 10 hasta que esté dentro del rango
+  while (number > maxValue) {
+    number /= 10;
+  }
+
+  return number;
+}
+
+function toDecimalLittleEndian(bytes) {
+  let result = "";
+  for (let i = bytes.length - 1; i >= 0; i--) {
+    result += bytes[i];
+  }
+  return parseInt(result, 16);
 }
 
 module.exports = {
-  parseHexToDecimal,
   adjustPrecision,
   parseSignedInteger,
+  toDecimalLittleEndian,
+  adjustDirection,
 };
